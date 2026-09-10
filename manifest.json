@@ -1,5 +1,5 @@
 {
-    "name": "Dyslexia Helper",
+    "name": "DyslexiView: Dyslexia Reader & TTS",
     "version": "1.0",
     "description": "A Chrome extension to assist users with dyslexia by providing text-to-speech functionality and customizable reading settings.",
     "manifest_version": 3,
@@ -9,25 +9,15 @@
         "storage"
     ],
     "action": {
-        "default_popup": "popup.html",
-        "default_icon": {
-            "16": "icons/icon16.png",
-            "48": "icons/icon48.png",
-            "128": "icons/icon128.png"
-        }
+        "default_popup": "popup/popup.html"
     },
     "background": {
-        "service_worker": "background.js"
+        "service_worker": "scripts/background.js"
     },
     "content_scripts": [
         {
             "matches": ["<all_urls>"],
-            "js": ["content.js"]
+            "js": ["./scripts/content.js"]
         }
-    ],
-    "icons": {
-        "16": "icons/icon16.png",
-        "48": "icons/icon48.png",
-        "128": "icons/icon128.png"
-    }
+    ]
 }

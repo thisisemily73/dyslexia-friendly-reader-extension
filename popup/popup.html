@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DyslexiView: Dyslexia Reader & TTS</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+  <header>
+    <div class="brand">
+      <span class="logo">R</span> DyslexiView
+    </div>
+    <span class="status">● Ready</span>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="section-title">Read this page</div>
+      <div class="controls">
+        <button class="speak" id="speak">▶ Start reading</button>
+        <button class="stop" id="stop">■ Stop</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <span>Reading speed</span>
+        <span class="speed-value" id="speedValue">1.0×</span>
+      </div>
+      <input id="speed" type="range" min="0.5" max="2" step="0.1" value="1">
+      <div class="range-labels">
+        <span>Slower</span>
+        <span>Faster</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">Reading preferences</div>
+
+      <div class="option">
+        <div>
+          <strong>Voice</strong>
+          <small>Choose your preferred voice</small>
+        </div>
+        <select id="voice">
+          <option>Default</option>
+        </select>
+      </div>
+
+      <div class="option">
+        <div>
+          <strong>OpenDyslexic font</strong>
+          <small>Make letters easier to read</small>
+        </div>
+        <label class="switch">
+          <input id="font" type="checkbox" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="option">
+        <div>
+          <strong>Highlight as I read</strong>
+          <small>Follow along with spoken text</small>
+        </div>
+        <label class="switch">
+          <input id="highlight" type="checkbox" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+    </section>
+  </main>
+
+  <footer>Settings apply to the current page</footer>
+
+  <script src="popup.js"></script>
+</body>
+
+</html>
