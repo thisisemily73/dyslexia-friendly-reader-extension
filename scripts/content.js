@@ -1,3 +1,5 @@
+// scripts/content.js
+
 (function () {
   if (window.hasDyslexiViewLoaded) return;
   window.hasDyslexiViewLoaded = true;
@@ -17,7 +19,6 @@
         font-family: 'OpenDyslexic', sans-serif !important;
       }
 
-      /* Active Word Highlight */
       .dv-word-active {
         background-color: #fef08a !important;
         color: #0f172a !important;
@@ -25,7 +26,6 @@
         box-shadow: 0 0 0 2px #fde047;
       }
 
-      /* Top Middle Floating Toolbar */
       #dyslexiview-toolbar {
         position: fixed;
         top: 15px;
@@ -61,7 +61,6 @@
     document.head.appendChild(styleElement);
   }
 
-  // Inject element for dynamic text spacing rules
   let spacingStyleTag = document.getElementById('dyslexiview-spacing-styles');
   if (!spacingStyleTag) {
     spacingStyleTag = document.createElement('style');
@@ -83,7 +82,7 @@
       `;
       document.body.appendChild(toolbar);
 
-      document.getElementById('dv-read-btn').onclick = () => startReadingText({ highlightEnabled: window.dvHighlightEnabled });
+      document.getElementById('dv-read-btn').onclick = () => startReadingText();
       document.getElementById('dv-pause-btn').onclick = () => togglePauseSpeech();
       document.getElementById('dv-stop-btn').onclick = () => stopReadingText();
       document.getElementById('dv-close-btn').onclick = () => {
@@ -129,6 +128,11 @@
     window.speechSynthesis.cancel();
     clearHighlights();
 
+    // Determine explicitly if highlights are enabled
+    const isHighlightingActive = options.highlightEnabled !== undefined 
+      ? options.highlightEnabled 
+      : window.dvHighlightEnabled;
+
     const selection = window.getSelection();
     const selectedText = selection.toString().trim();
 
@@ -137,7 +141,8 @@
       return;
     }
 
-    if (options.highlightEnabled) {
+    // Only split text into spans if highlighting is explicitly turned ON
+    if (isHighlightingActive) {
       const range = selection.getRangeAt(0);
       const fragment = range.extractContents();
       const div = document.createElement('div');
@@ -171,7 +176,7 @@
       if (matchedVoice) utterance.voice = matchedVoice;
     }
 
-    if (options.highlightEnabled) {
+    if (isHighlightingActive) {
       let wordIndex = 0;
       utterance.addEventListener('boundary', (event) => {
         if (event.name === 'word' && currentSpans.length > 0) {
@@ -195,6 +200,10 @@
       document.body.classList.toggle('dyslexiview-font-active', request.enabled);
     }
 
+    if (request.action === 'set_highlight_enabled') {
+      window.dvHighlightEnabled = request.enabled;
+    }
+
     if (request.action === 'toggle_always_bar') {
       if (request.enabled) {
         ensureToolbar();
@@ -205,7 +214,6 @@
     }
 
     if (request.action === 'adjust_spacing') {
-      // Sets rule globally via style tag so highlighted/wrapped text keeps spacing!
       spacingStyleTag.textContent = `
         p, h1, h2, h3, h4, h5, h6, li, article, section, .dv-word, span:not(#dyslexiview-toolbar *) {
           letter-spacing: ${request.letterSpacing}px !important;
@@ -216,7 +224,9 @@
     }
 
     if (request.action === 'start_reading') {
-      window.dvHighlightEnabled = request.highlightEnabled;
+      if (request.highlightEnabled !== undefined) {
+        window.dvHighlightEnabled = request.highlightEnabled;
+      }
       ensureToolbar();
       startReadingText(request);
     }

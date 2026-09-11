@@ -13,6 +13,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const wordSpacing = document.getElementById('wordSpacing');
     const lineHeight = document.getElementById('lineHeight');
 
+    // Load saved settings from Chrome Storage (defaults alwaysBarEnabled to true)
+    chrome.storage.local.get(
+        ['fontEnabled', 'highlightEnabled', 'alwaysBarEnabled', 'letterSpacing', 'wordSpacing', 'lineHeight', 'speed'],
+        (saved) => {
+            if (fontToggle && saved.fontEnabled !== undefined) {
+                fontToggle.checked = saved.fontEnabled;
+            }
+            if (highlightToggle && saved.highlightEnabled !== undefined) {
+                highlightToggle.checked = saved.highlightEnabled;
+            }
+            
+            // Default QuickBar to true/checked if it's the user's first time opening
+            const isAlwaysBarOn = saved.alwaysBarEnabled !== undefined ? saved.alwaysBarEnabled : true;
+            if (alwaysBarToggle) {
+                alwaysBarToggle.checked = isAlwaysBarOn;
+            }
+
+            if (letterSpacing && saved.letterSpacing !== undefined) letterSpacing.value = saved.letterSpacing;
+            if (wordSpacing && saved.wordSpacing !== undefined) wordSpacing.value = saved.wordSpacing;
+            if (lineHeight && saved.lineHeight !== undefined) lineHeight.value = saved.lineHeight;
+
+            if (speedInput && saved.speed !== undefined) {
+                speedInput.value = saved.speed;
+                if (speedValue) speedValue.textContent = `${Number(saved.speed).toFixed(1)}×`;
+            }
+
+            // Sync all states immediately to content script
+            updateSpacing();
+            if (fontToggle) sendTabMessage({ action: 'toggle_font', enabled: fontToggle.checked });
+            if (highlightToggle) sendTabMessage({ action: 'set_highlight_enabled', enabled: highlightToggle.checked });
+            sendTabMessage({ action: 'toggle_always_bar', enabled: isAlwaysBarOn });
+        }
+    );
+
     function loadVoices() {
         const voices = speechSynthesis.getVoices();
         voiceSelect.innerHTML = '<option value="">Default Voice</option>';
@@ -32,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (speedInput && speedValue) {
         speedInput.addEventListener('input', () => {
             speedValue.textContent = `${Number(speedInput.value).toFixed(1)}×`;
+            chrome.storage.local.set({ speed: speedInput.value });
         });
     }
 
@@ -64,12 +99,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateSpacing() {
         if (!letterSpacing || !wordSpacing || !lineHeight) return;
-        sendTabMessage({
-            action: 'adjust_spacing',
+
+        const spacingData = {
             letterSpacing: letterSpacing.value,
             wordSpacing: wordSpacing.value,
             lineHeight: lineHeight.value
-        });
+        };
+
+        chrome.storage.local.set(spacingData);
+        sendTabMessage({ action: 'adjust_spacing', ...spacingData });
     }
 
     if (speakBtn) {
@@ -78,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 action: 'start_reading',
                 speed: parseFloat(speedInput.value),
                 voiceName: voiceSelect.value,
-                highlightEnabled: highlightToggle ? highlightToggle.checked : false
+                highlightEnabled: highlightToggle ? highlightToggle.checked : true
             });
         });
     }
@@ -88,12 +126,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (fontToggle) {
         fontToggle.addEventListener('change', () => {
+            chrome.storage.local.set({ fontEnabled: fontToggle.checked });
             sendTabMessage({ action: 'toggle_font', enabled: fontToggle.checked });
+        });
+    }
+
+    if (highlightToggle) {
+        highlightToggle.addEventListener('change', () => {
+            chrome.storage.local.set({ highlightEnabled: highlightToggle.checked });
+            sendTabMessage({ action: 'set_highlight_enabled', enabled: highlightToggle.checked });
         });
     }
 
     if (alwaysBarToggle) {
         alwaysBarToggle.addEventListener('change', () => {
+            chrome.storage.local.set({ alwaysBarEnabled: alwaysBarToggle.checked });
             sendTabMessage({ action: 'toggle_always_bar', enabled: alwaysBarToggle.checked });
         });
     }
