@@ -2,81 +2,144 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DyslexiView: Dyslexia Reader & TTS</title>
-  <link rel="stylesheet" href="popup.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DyslexiView</title>
+    <link rel="stylesheet" href="popup.css">
 </head>
 
 <body>
-  <header>
-    <div class="brand">
-      <span class="logo">R</span> DyslexiView
+    <div class="card">
+        <header class="header">
+            <div class="brand">
+                <div class="logo-icon">DV</div>
+                <div class="brand-text">
+                    <span class="title">DyslexiView</span>
+                    <span class="subtitle">Dyslexia Reader & TTS</span>
+                </div>
+            </div>
+            <span class="status-badge">● Ready</span>
+        </header>
+
+        <main class="content">
+            <!-- Controls Card -->
+            <section class="section-box">
+                <div class="section-header">
+                    <span class="section-title">Read Selected Text</span>
+                </div>
+                <p class="instruction-note">💡 Highlight text on the web page, then click Start.</p>
+
+                <div class="controls-grid">
+                    <button class="btn btn-primary" id="speak">
+                        <span class="icon">▶</span> Start
+                    </button>
+                    <button class="btn btn-warning" id="pause">
+                        <span class="icon">⏸</span> Pause
+                    </button>
+                    <button class="btn btn-secondary" id="stop">
+                        <span class="icon">■</span> Stop
+                    </button>
+                </div>
+            </section>
+
+            <!-- Speed Control -->
+            <section class="section-box">
+                <div class="section-header">
+                    <span class="section-title">Reading Speed</span>
+                    <span class="speed-value" id="speedValue">1.0×</span>
+                </div>
+                <input id="speed" class="slider-input" type="range" min="0.5" max="2" step="0.1" value="1">
+                <div class="range-labels">
+                    <span>0.5× Slower</span>
+                    <span>2.0× Faster</span>
+                </div>
+            </section>
+
+            <!-- Reading Preferences -->
+            <section class="section-box">
+                <div class="section-header">
+                    <span class="section-title">Preferences</span>
+                </div>
+
+                <!-- Quick Bar Toggle -->
+                <div class="option-row">
+                    <div class="option-info">
+                        <strong>Always Show Quick Bar</strong>
+                    </div>
+                    <label class="toggle-switch">
+                        <input id="alwaysBar" type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="option-row">
+                    <div class="option-info">
+                        <strong>Voice</strong>
+                        <small>Choose preferred voice</small>
+                    </div>
+                    <select id="voice" class="custom-select">
+                        <option value="">Default Voice</option>
+                    </select>
+                </div>
+
+                <div class="option-row">
+                    <div class="option-info">
+                        <strong>OpenDyslexic Font</strong>
+                        <small>Swap page fonts for accessibility</small>
+                    </div>
+                    <label class="toggle-switch">
+                        <input id="font" type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="option-row">
+                    <div class="option-info">
+                        <strong>Highlight as I Read</strong>
+                        <small>Follow along word-by-word</small>
+                    </div>
+                    <label class="toggle-switch">
+                        <input id="highlight" type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </section>
+
+            <section class="section-box">
+                <div class="section-header">
+                    <span class="section-title">Text Spacing</span>
+                </div>
+
+                <div class="option-row">
+                    <div class="option-info">
+                        <strong>Letter Spacing</strong>
+                    </div>
+                    <input id="letterSpacing" class="slider-input" type="range" min="0" max="10" step="0.5" value="0">
+                </div>
+
+                <div class="option-row">
+                    <div class="option-info">
+                        <strong>Word Spacing</strong>
+                    </div>
+                    <input id="wordSpacing" class="slider-input" type="range" min="0" max="20" step="1" value="0">
+                </div>
+
+                <div class="option-row">
+                    <div class="option-info">
+                        <strong>Line Height</strong>
+                    </div>
+                    <input id="lineHeight" class="slider-input" type="range" min="1" max="3" step="0.1" value="1.5">
+                </div>
+            </section>
+        </main>
+
+
+        <footer class="footer">
+            Settings apply to current page
+        </footer>
     </div>
-    <span class="status">● Ready</span>
-  </header>
 
-  <main>
-    <section class="section">
-      <div class="section-title">Read this page</div>
-      <div class="controls">
-        <button class="speak" id="speak">▶ Start reading</button>
-        <button class="stop" id="stop">■ Stop</button>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="section-title">
-        <span>Reading speed</span>
-        <span class="speed-value" id="speedValue">1.0×</span>
-      </div>
-      <input id="speed" type="range" min="0.5" max="2" step="0.1" value="1">
-      <div class="range-labels">
-        <span>Slower</span>
-        <span>Faster</span>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="section-title">Reading preferences</div>
-
-      <div class="option">
-        <div>
-          <strong>Voice</strong>
-          <small>Choose your preferred voice</small>
-        </div>
-        <select id="voice">
-          <option>Default</option>
-        </select>
-      </div>
-
-      <div class="option">
-        <div>
-          <strong>OpenDyslexic font</strong>
-          <small>Make letters easier to read</small>
-        </div>
-        <label class="switch">
-          <input id="font" type="checkbox" checked>
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <div class="option">
-        <div>
-          <strong>Highlight as I read</strong>
-          <small>Follow along with spoken text</small>
-        </div>
-        <label class="switch">
-          <input id="highlight" type="checkbox" checked>
-          <span class="slider"></span>
-        </label>
-      </div>
-    </section>
-  </main>
-
-  <footer>Settings apply to the current page</footer>
-
-  <script src="popup.js"></script>
+    <script src="popup.js"></script>
 </body>
 
 </html>
