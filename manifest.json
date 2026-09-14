@@ -26,5 +26,11 @@
       ],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "icons": {
+    "16": "logo/DV-16x16.png",
+    "32": "logo/DV-32x32.png",
+    "48": "logo/DV-48x48.png",
+    "128": "logo/DV-128x128.png"
+  }
 }
